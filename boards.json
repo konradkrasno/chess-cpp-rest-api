@@ -1,0 +1,21 @@
+{
+    "a1": {
+        "1": {
+            "chessman": "Rook",
+            "color": "w",
+            "position": "a1"
+        },
+        "2": {
+            "chessman": "Rook",
+            "color": "w",
+            "position": "a1"
+        }
+    },
+    "a2": {
+        "1": {
+            "chessman": "Knight",
+            "color": "w",
+            "position": "a2"    
+        }
+    }
+}
