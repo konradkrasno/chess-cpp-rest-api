@@ -8,6 +8,14 @@ using std::string;
 #include "Move.h"
 #include "Board.h"
 
+static const std::map<char, string> players
+{
+	{ 'w', "White" },
+	{ 'b', "Black" }
+};
+
+static const bool invertTable(false);
+
 class Gameplay
 {
 public:
@@ -25,4 +33,5 @@ public:
 	bool Castling(char const playerColor, string test_input = "default");
 	bool SwitchPlayerAndLookForCheckMateOrCheck(char& playerColor);
 	void StartGame();
+	void UpdateDataFromServer();
 };

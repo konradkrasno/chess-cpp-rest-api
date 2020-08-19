@@ -302,6 +302,8 @@ bool Board::MakeMove(char const playerColor, string const actualPosition, string
                     return false;
                 }
                 newPositionChessMan.ChangeFirstMove();
+                provider.PutDataToServer(game_id, actualPosition, "none");
+                provider.PutDataToServer(game_id, newPosition, newPositionChessMan.GetSymbol());
 
                 return true;
             }
@@ -377,6 +379,9 @@ bool Board::PawnOnEndLine(
 
         return false;
     }
+
+    provider.PutDataToServer(game_id, actualPositionChessMan.GetPosition(), "none");
+    provider.PutDataToServer(game_id, newPosition, newPositionChessMan.GetSymbol());
     return true;
 }
 
@@ -488,4 +493,9 @@ void Board::MakeCastling(char const playerColor, char const rookFile, char const
     actualKingPositionField = ChessMan(ChessManType::None, 0);
 
     CalculateMovesBoardAndReactionBoardWithNeutralKings();
+
+    provider.PutDataToServer(game_id, actualRookPosition, "none");
+    provider.PutDataToServer(game_id, actualKingPosition, "none");
+    provider.PutDataToServer(game_id, newRookPosition, newRookPositionField.GetSymbol());
+    provider.PutDataToServer(game_id, newKingPosition, newKingPositionField.GetSymbol());
 }

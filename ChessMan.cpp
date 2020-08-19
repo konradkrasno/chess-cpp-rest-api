@@ -6,7 +6,7 @@ ChessMan::ChessMan(ChessManType const type, char const color, string position) :
 	switch (_type)
 	{
 	case ChessManType::None:
-		_symbol += "none";
+		_symbol = "none";
 		_firstMove = false;
 		break;
 	case ChessManType::Rook:
@@ -43,6 +43,79 @@ ChessMan::ChessMan(ChessManType const type, char const color, string position) :
 		break;
 	default:
 		break;
+	}
+}
+
+ChessMan::ChessMan(string const symbol, string const position, bool const first_move) : _symbol(symbol), _position(position), _firstMove(first_move)
+{
+	if (symbol == "none")
+	{
+		_type = ChessManType::None;
+		_color = 0;
+	}
+	else if (symbol == "♖") 
+	{
+		_type = ChessManType::Rook;
+		_color = 'b';
+	}
+	else if (symbol == "♜") 
+	{
+		_type = ChessManType::Rook;
+		_color = 'w';
+	}
+	else if (symbol == "♞") 
+	{
+		_type = ChessManType::Knight;
+		_color = 'w';
+	}
+	else if (symbol == "♘") 
+	{
+		_type = ChessManType::Knight;
+		_color = 'b';
+	}
+	else if (symbol == "♝") 
+	{
+		_type = ChessManType::Bishop;
+		_color = 'w';
+	}
+	else if (symbol == "♗") 
+	{
+		_type = ChessManType::Bishop;
+		_color = 'b';
+	}
+	else if (symbol == "♛") 
+	{
+		_type = ChessManType::Queen;
+		_color = 'w';
+	}
+	else if (symbol == "♕") 
+	{
+		_type = ChessManType::Queen;
+		_color = 'b';
+	}
+	else if (symbol == "♚") 
+	{
+		_type = ChessManType::King;
+		_color = 'w';
+	}
+	else if (symbol == "♔") 
+	{
+		_type = ChessManType::King;
+		_color = 'b';
+	}
+	else if (symbol == "♟") 
+	{
+		_type = ChessManType::Pawn;
+		_color = 'w';
+		if (_color == 'w') _moveDirection = "increase";
+		else _moveDirection = "decrease";
+	}
+	else if (symbol == "♙") 
+	{
+		_type = ChessManType::Pawn;
+		_color = 'b';
+		if (_color == 'w') _moveDirection = "increase";
+		else _moveDirection = "decrease";
 	}
 }
 

@@ -5,15 +5,6 @@ using std::cin;
 
 #include "Gameplay.h"
 
-static const std::map<char, string> players
-{
-	{ 'w', "White" },
-	{ 'b', "Black" }
-};
-
-static const bool invertTable(false);
-
-
 Gameplay::Gameplay()
 {
 }
@@ -168,6 +159,8 @@ bool Gameplay::Castling(char const playerColor, string test_input)
 
 bool Gameplay::SwitchPlayerAndLookForCheckMateOrCheck(char& playerColor)
 {
+	UpdateDataFromServer();
+
 	playerColor = SwitchPlayer(playerColor);
 	board.DrawBoard(playerColor, invertTable);
 
@@ -224,4 +217,9 @@ void Gameplay::StartGame()
 			if (SwitchPlayerAndLookForCheckMateOrCheck(playerColor)) break;
 		}
 	}
+}
+
+void Gameplay::UpdateDataFromServer()
+{
+	board.boardAttributes.boardState = board.provider.GetDataFromServer();
 }

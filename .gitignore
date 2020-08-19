@@ -1,2 +1,8 @@
+restc-cpp/
 *.o
 chess_game
+.vscode
+*.txt
+chess
+server
+client

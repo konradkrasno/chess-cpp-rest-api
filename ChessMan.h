@@ -28,6 +28,7 @@ private:
 
 public:
     ChessMan(ChessManType const type, char const color, string position = "none");
+    ChessMan(string const symbol, string const position, bool const first_move);
 	~ChessMan();
     string GetSymbol() const { return _symbol; }
     ChessManType GetType() const { return _type; }

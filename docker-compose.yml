@@ -1,0 +1,30 @@
+version: '2'
+
+services:
+  rest-api-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/cpp-rest-api
+    command: bash -c "make"
+    command: bash -c "./main"
+
+  # chess-client-1:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - .:/chess
+  #   working_dir: /chess/code
+  #   command: bash -c "make -f ./compile_client.mak"
+  #   command: bash -c "./client"
+
+  # chess-client-2:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - .:/chess

@@ -5,7 +5,8 @@ using std::string;
 
 #include "subsidiary.h"
 #include "Move.h"
-#include "BoardAttributes.h"
+
+#include "Provider.h"
 
 enum class LineType
 {
@@ -27,6 +28,8 @@ class Board :
     public Move
 {
 private:
+    int game_id = 1;
+
     void _DrawMiddle(LineType const lineType, char file = 0, string chessManSymbol = "none") const;
     void _DrawEndBegin(LineEndBegin const lineEndBegin, char rank = 0) const;
     void _DrawEntireNonPositionLine(LineType const lineType, LineEndBegin const lineEndBegin, string fileRange, char rank = 0) const;
@@ -48,6 +51,7 @@ private:
 public:
     Board();
     ~Board();
+    Provider provider;
     void DrawBoard(char const playerColor, bool const invertTable) const;
     ChessMan FindChessManOnBoard(char const file, char const rank) const;
     void CalculateMovesBoardAndReactionBoard();

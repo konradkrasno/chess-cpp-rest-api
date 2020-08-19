@@ -68,7 +68,8 @@ std::map<string, ChessMan> BoardAttributes::StartingBoard()
     mapping.insert(std::pair<string, ChessMan>("h7", ChessMan(ChessManType::Pawn, 'b', "h7")));
 
     string emptyRankRange = "6543";
-    for (char const& file : fileRange)
+    string const file_range = "abcdefgh";
+    for (char const& file : file_range)
     {
         for (char const& rank : emptyRankRange)
         {
