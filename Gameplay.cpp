@@ -179,10 +179,6 @@ bool Gameplay::SwitchPlayerAndLookForCheckMateOrCheck(char& playerColor)
 
 void Gameplay::StartGame()
 {
-	cout << "This is Chess Game" << endl;
-	cout << "Print help for more information" << endl;
-	cout << endl;
-
 	char playerColor('w');
 
 	board.DrawBoard(playerColor, invertTable);
@@ -221,5 +217,5 @@ void Gameplay::StartGame()
 
 void Gameplay::UpdateDataFromServer()
 {
-	board.boardAttributes.boardState = board.provider.GetDataFromServer();
+	board.boardAttributes.boardState = board.provider.GetBoardsFromServer();
 }

@@ -1,12 +1,13 @@
 #include "Gameplay.h"
+#include "ClientHandler.h"
 
 int main() {
+    ClientHandler client_handler;
+
     while (true) {
-        Gameplay gameplay;
-        gameplay.StartGame();
+        client_handler.ChoosePlayer();
+
+        // Gameplay gameplay;
+        // gameplay.StartGame();
     }
-
-    // Provider provider;
-    // provider.PutDataToServer(1, "a8", "none");
-
 }
