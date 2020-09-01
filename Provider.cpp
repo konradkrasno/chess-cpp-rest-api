@@ -110,3 +110,29 @@ void Provider::PutPlayerToServer(string _name, string _color, bool _status)
 
     rest_client_put->CloseWhenReady(true);
 }
+
+/////
+void Provider::PutTestToServer(int _test)
+{
+    Test_struct data_object;
+    data_object.test = _test;
+
+    auto rest_client_put = RestClient::Create();
+
+    rest_client_put->ProcessWithPromise([&](Context& ctx) {
+        try {
+            auto reply = RequestBuilder(ctx)
+                .Put(url_options::server_url+"/test")
+                .Data(data_object)
+                .Execute();
+        }
+        catch (std::exception ex)
+		{
+			std::cerr << "Error calling: " << ex.what() << std::endl;
+		}	
+    });
+
+    rest_client_put->CloseWhenReady(true);
+
+}
+/////

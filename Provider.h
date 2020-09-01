@@ -23,6 +23,11 @@ struct Player_struct {
     bool status;
     // list<int> games;
 };
+/////
+struct Test_struct {
+    int test;
+};
+/////
 
 BOOST_FUSION_ADAPT_STRUCT(
     Position,
@@ -38,7 +43,12 @@ BOOST_FUSION_ADAPT_STRUCT(
     (bool, status)
     // (list<int>, games)
 )
-
+/////
+BOOST_FUSION_ADAPT_STRUCT(
+    Test_struct,
+    (int, test)
+)
+/////
 class Provider
 {
 public:
@@ -47,5 +57,8 @@ public:
 	std::map <string, ChessMan> GetBoardsFromServer();
     std::list<Player> GetPlayersFromServer();
     void PutPositionToServer(int _id, string _position, string _symbol);
-    void PutPlayerToServer(string _name, string _color, bool _status = false);
+    void PutPlayerToServer(string _name, string _color, bool _status);
+    /////
+    void PutTestToServer(int _test);
+    /////
 };

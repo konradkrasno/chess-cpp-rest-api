@@ -125,7 +125,7 @@ bool ClientHandler::CreateNewPlayer()
 	string name;
 	cin >> name;
 
-	gameplay.board.provider.PutPlayerToServer(name, "none");
+	gameplay.board.provider.PutPlayerToServer(name, "none", false);
 
     return true;
 }

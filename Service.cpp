@@ -46,7 +46,7 @@ void Service::handleGet(http_request message) {
     else {
         if (path[0]=="players") {
             vector <json::value> jsonPlayers;
-            json::value jsonPlayer;          
+            json::value jsonPlayer;
 
             for(const auto& player : playersOnServer)
             {
@@ -71,10 +71,26 @@ void Service::handleGet(http_request message) {
             playersList = json::value::array(jsonPlayers);
             message.reply(status_codes::OK, playersList);
             }
-            // if (path[])
+        /////
+        else if (path[0]=="test") {
+            vector <json::value> jsonTestVector;
+            json::value jsonTest;
+
+            for(const auto& t : testData)
+            {
+                int test = t;
+                jsonTest["test"] = json::value::number(test);
+                jsonTestVector.push_back(jsonTest);
+            }
+
+            json::value testList;
+            testList = json::value::array(jsonTestVector);
+            message.reply(status_codes::OK, testList);
+            }
         else {
             message.reply(status_codes::BadRequest);
         }
+        /////
     }
 }
 
@@ -117,4 +133,22 @@ void Service::handlePut(http_request message) {
             }
         });
     }
+    /////
+    else if(message.request_uri().to_string() == "/chess/test")
+    {
+        message.extract_json().then([=](pplx::task<json::value> task)
+        {
+            try
+            {
+                json::value val = task.get();
+                int test = val[U("test")].as_number().to_int32();
+                testData.push_back(test);
+                message.reply(status_codes::OK);
+            }
+            catch(std::exception& e) {
+                message.reply(status_codes::BadRequest);
+            }
+        });
+    }
+    /////
 }

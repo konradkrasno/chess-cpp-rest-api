@@ -4,10 +4,13 @@
 int main() {
     ClientHandler client_handler;
 
-    while (true) {
-        client_handler.ChoosePlayer();
+    client_handler.gameplay.board.provider.PutTestToServer(1);
+    client_handler.gameplay.board.provider.PutTestToServer(0);
 
-        // Gameplay gameplay;
-        // gameplay.StartGame();
-    }
+    // while (true) {
+    //     // client_handler.ChoosePlayer();
+
+    //     Gameplay gameplay;
+    //     gameplay.StartGame();
+    // }
 }

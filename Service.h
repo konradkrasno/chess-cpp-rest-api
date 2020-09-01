@@ -14,6 +14,9 @@ public:
     BoardAttributes boardsOnServer;
     std::list<Player> playersOnServer;
     std::list<Game> gamesOnServer;
+    /////
+    std::list<int> testData;
+    /////
     void handleGet(http_request message);
     void handlePut(http_request message);
     void initRestOpHandlers() override;
