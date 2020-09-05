@@ -1,64 +1,35 @@
-#include <boost/lexical_cast.hpp>
-#include <boost/fusion/adapted.hpp>
+// #include <boost/lexical_cast.hpp>
+// #include <boost/fusion/adapted.hpp>
 
-#include "restc-cpp/restc-cpp.h"
-#include "restc-cpp/SerializeJson.h"
-#include "restc-cpp/RequestBuilder.h"
+// #include "restc-cpp/restc-cpp.h"
+// #include "restc-cpp/SerializeJson.h"
+// #include "restc-cpp/RequestBuilder.h"
+#include "restincurl/restincurl.h"
+#include "nlohmann/json.hpp"
 
 #include "BoardAttributes.h"
 #include "Models.h"
 
 using namespace std;
-using namespace restc_cpp;
+using namespace nlohmann;
 
-struct Position {
-	bool first_move;
-    int game_id;
-    string position;
-    string symbol;
-};
-struct Player_struct {
-    string name;
-    string color;
-    bool status;
-    // list<int> games;
-};
-/////
-struct Test_struct {
-    int test;
-};
-/////
-
-BOOST_FUSION_ADAPT_STRUCT(
-    Position,
-    (bool, first_move)
-    (int, game_id)
-    (string, position)
-    (string, symbol)
-)
-BOOST_FUSION_ADAPT_STRUCT(
-    Player_struct,
-    (string, name)
-    (string, color)
-    (bool, status)
-    // (list<int>, games)
-)
-/////
-BOOST_FUSION_ADAPT_STRUCT(
-    Test_struct,
-    (int, test)
-)
-/////
 class Provider
 {
+private:
+    string server_url = "http://172.17.0.1/chess";
+	BoardAttributes tmp_boardAttr;
+    std::list<Player> tmp_players_list;
+    std::list<Game> tmp_games_list;
+
 public:
     Provider();
     ~Provider();
 	std::map <string, ChessMan> GetBoardsFromServer();
     std::list<Player> GetPlayersFromServer();
+    Player GetPlayerFromServer(string const player_name);
+    std::list<Game> GetGamesFromServer();
+    Game GetGameFromServer(string const game_name);
     void PutPositionToServer(int _id, string _position, string _symbol);
-    void PutPlayerToServer(string _name, string _color, bool _status);
-    /////
-    void PutTestToServer(int _test);
-    /////
+    void PutPlayerToServer(Player player);
+    void PutGameToServer(string _name, Player player);
 };

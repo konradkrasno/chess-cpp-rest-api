@@ -8,17 +8,6 @@ void Service::initRestOpHandlers() {
 }
 
 void Service::handleGet(http_request message) {
-    ///////
-    // boardOnServer.boardState.at("g7") = ChessMan(ChessManType::None, 0, "g7");
-    // boardOnServer.boardState.at("h7") = ChessMan(ChessManType::None, 0, "h7");
-    // boardOnServer.boardState.at("g5") = ChessMan(ChessManType::Pawn, 'b', "g5");
-    // boardOnServer.boardState.at("h4") = ChessMan(ChessManType::Pawn, 'b', "h4");
-    // Player p1("player1", "w", false);
-    // Player p2("player2", "b", true);
-    // playersOnServer.push_back(p1);
-    // playersOnServer.push_back(p2);
-    ///////
-
     vector<string> path = requestPath(message);
     if(path.empty()) {
         vector <json::value> boardPositions;
@@ -51,18 +40,19 @@ void Service::handleGet(http_request message) {
             for(const auto& player : playersOnServer)
             {
                 string name(player.GetName());
-                string color(player.GetColor());
-                bool status(player.GetStatus());
+                string color;
+                color += player.GetColor();
+                bool active(player.GetStatus());
 
                 vector<json::value> games;
-                for(const auto& game : player.GetGamesList())
+                for(const auto& game : player.GetGames())
                 {
                     games.push_back(game);
                 }
 
                 jsonPlayer["name"] = json::value::string(name);
                 jsonPlayer["color"] = json::value::string(color);
-                jsonPlayer["status"] = json::value::boolean(status);
+                jsonPlayer["active"] = json::value::boolean(active);
                 jsonPlayer["games"] = json::value::array(games);
                 jsonPlayers.push_back(jsonPlayer);
             }
@@ -71,26 +61,42 @@ void Service::handleGet(http_request message) {
             playersList = json::value::array(jsonPlayers);
             message.reply(status_codes::OK, playersList);
             }
-        /////
-        else if (path[0]=="test") {
-            vector <json::value> jsonTestVector;
-            json::value jsonTest;
+        if (path[0]=="games") {
+            vector <json::value> jsonGames;
+            json::value jsonGame;
 
-            for(const auto& t : testData)
+            for(const auto& game : gamesOnServer)
             {
-                int test = t;
-                jsonTest["test"] = json::value::number(test);
-                jsonTestVector.push_back(jsonTest);
+                int id(game.GetId());
+                string name(game.GetName());
+                int players_counter(game.GetPlayersCounter());
+
+                vector<json::value> jsonPlayers;
+                json::value jsonPlayer;
+                for(const auto& player : game.GetPlayers())
+                {
+                    string name(player.GetName());
+                    string color;
+                    color += player.GetColor();
+                    bool active(player.GetStatus());
+
+                    jsonPlayer["name"] = json::value::string(name);
+                    jsonPlayer["color"] = json::value::string(color);
+                    jsonPlayer["active"] = json::value::boolean(active);
+                    jsonPlayers.push_back(jsonPlayer);
+                }
+
+                jsonGame["id"] = json::value::number(id);
+                jsonGame["name"] = json::value::string(name);
+                jsonGame["players"] = json::value::array(jsonPlayers);
+                jsonGame["players_counter"] = json::value::number(players_counter);
+                jsonGames.push_back(jsonGame);
             }
 
-            json::value testList;
-            testList = json::value::array(jsonTestVector);
-            message.reply(status_codes::OK, testList);
+            json::value gamesList;
+            gamesList = json::value::array(jsonGames);
+            message.reply(status_codes::OK, gamesList);
             }
-        else {
-            message.reply(status_codes::BadRequest);
-        }
-        /////
     }
 }
 
@@ -115,6 +121,7 @@ void Service::handlePut(http_request message) {
             }
         });
     }
+
     else if(message.request_uri().to_string() == "/chess/players")
     {
         message.extract_json().then([=](pplx::task<json::value> task)
@@ -124,8 +131,19 @@ void Service::handlePut(http_request message) {
                 json::value val = task.get();
                 string name = val[U("name")].as_string();
                 string color = val[U("color")].as_string();
-                bool status = val[U("status")].as_bool();
-                playersOnServer.push_back(Player(name, color, status));
+                bool active = val[U("active")].as_bool();
+
+                for(auto& player : playersOnServer)
+                {
+                    if(player.GetName() == name)
+                    {
+                        player.SetColor(color);
+                        player.SetStatus(active);
+                        message.reply(status_codes::OK);
+                        return;
+                    }
+                }
+                playersOnServer.push_back(Player(name, color, active));
                 message.reply(status_codes::OK);
             }
             catch(std::exception& e) {
@@ -133,16 +151,52 @@ void Service::handlePut(http_request message) {
             }
         });
     }
-    /////
-    else if(message.request_uri().to_string() == "/chess/test")
+
+    else if(message.request_uri().to_string() == "/chess/games")
     {
         message.extract_json().then([=](pplx::task<json::value> task)
         {
             try
             {
                 json::value val = task.get();
-                int test = val[U("test")].as_number().to_int32();
-                testData.push_back(test);
+                string name = val[U("name")].as_string();
+
+                json::array players = val[U("players")].as_array();
+
+                Player pl;
+                for(auto& player : players)
+                {
+                    string player_name = player[U("name")].as_string();
+                    string player_color = player[U("color")].as_string();
+                    bool player_status = player[U("active")].as_bool();
+
+                    pl.SetName(player_name);
+                    pl.SetColor(player_color);
+                    pl.SetStatus(player_status);
+                }
+
+                for(auto& game : gamesOnServer)
+                {
+                    if(game.GetName() == name)
+                    {
+                        if(game.AddPlayer(pl))
+                        {
+                            message.reply(status_codes::OK);
+                            return;
+                        }
+                        else
+                        {
+                            // TODO finish statement
+                            message.reply(status_codes::OK);
+                            return;
+                        }
+                    }
+                }
+
+                std::list<Player> playerList;
+                playerList.push_back(pl);
+
+                gamesOnServer.push_back(Game(++last_id, name, 1, playerList));
                 message.reply(status_codes::OK);
             }
             catch(std::exception& e) {
@@ -150,5 +204,4 @@ void Service::handlePut(http_request message) {
             }
         });
     }
-    /////
 }

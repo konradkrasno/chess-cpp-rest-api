@@ -157,12 +157,17 @@ bool Gameplay::Castling(char const playerColor, string test_input)
 	return false;
 }
 
-bool Gameplay::SwitchPlayerAndLookForCheckMateOrCheck(char& playerColor)
+bool Gameplay::SwitchPlayerAndLookForCheckMateOrCheck(char playerColor, Player& player, Player& playmate)
 {
 	UpdateDataFromServer();
 
-	playerColor = SwitchPlayer(playerColor);
+	player.ChangeStatus();
+	board.provider.PutPlayerToServer(player);
+	playmate.ChangeStatus();
+	board.provider.PutPlayerToServer(playmate);
+
 	board.DrawBoard(playerColor, invertTable);
+	playerColor = SwitchPlayer(playerColor);
 
 	if (board.CheckMate(playerColor))
 	{
@@ -177,42 +182,55 @@ bool Gameplay::SwitchPlayerAndLookForCheckMateOrCheck(char& playerColor)
 	return false;
 }
 
-void Gameplay::StartGame()
+void Gameplay::StartGame(Player& player, Player& playmate)
 {
-	char playerColor('w');
+	string const player_name(player.GetName());
+	string const playmate_name(playmate.GetName());
 
-	board.DrawBoard(playerColor, invertTable);
+	char player_color(player.GetColor());
 
-	while (true)
+	board.DrawBoard(player_color, invertTable);
+
+	while(true)
 	{
+		player = board.provider.GetPlayerFromServer(player_name);
+		playmate = board.provider.GetPlayerFromServer(playmate_name);
+
 		bool castling(false);
 		bool new_position_validation(false);
 
 		string actual_position;
 		string new_position;
 
-		while (true)
+		if (player.GetStatus())
 		{
-			bool act_position_validation(GetInputFromUser(playerColor, ": which chessman would you like to move? ", actual_position, castling));
-			if (act_position_validation || castling) break;
-		}
-		if (!castling)
-		{
-			new_position_validation = GetInputFromUser(playerColor, ": where would you like to move? ", new_position, castling);
-		}
+			UpdateDataFromServer();
+			board.DrawBoard(player_color, invertTable);
 
-		if (new_position_validation)
-		{
-			if (board.MakeMove(playerColor, actual_position, new_position))
+			while (true)
 			{
-				if (SwitchPlayerAndLookForCheckMateOrCheck(playerColor)) break;
+				bool act_position_validation(GetInputFromUser(player_color, ": which chessman would you like to move? ", actual_position, castling));
+				if (act_position_validation || castling) break;
+			}
+			if (!castling)
+			{
+				new_position_validation = GetInputFromUser(player_color, ": where would you like to move? ", new_position, castling);
+			}
+
+			if (new_position_validation)
+			{
+				if (board.MakeMove(player_color, actual_position, new_position))
+				{
+					if (SwitchPlayerAndLookForCheckMateOrCheck(player_color, player, playmate)) break;
+				}
+			}
+			else if (castling)
+			{
+				if (SwitchPlayerAndLookForCheckMateOrCheck(player_color, player, playmate)) break;
 			}
 		}
-		else if (castling)
-		{
-			if (SwitchPlayerAndLookForCheckMateOrCheck(playerColor)) break;
-		}
 	}
+
 }
 
 void Gameplay::UpdateDataFromServer()
