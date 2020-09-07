@@ -34,20 +34,30 @@ bool ClientHandler::CheckInput(string input)
 		Help();
 		return false;
 	}
-    else if (input == "print")
+    else if (input == "players")
 	{
 		PrintPlayers();
 		return false;
 	}
-	else if (input == "new")
+	else if (input == "games")
+	{
+		PrintGames();
+		return false;
+	}
+	else if (input == "newplayer")
 	{
 		CreateNewPlayer();
+		return true;
+	}
+	else if (input == "newgame")
+	{
+		CreateNewGame();
 		return true;
 	}
 
     // TODO finish this feature
     // if (FindPlayer()) return true;
-	cout << "Wrong command, try again.";
+	cout << "Wrong command, try again: ";
 	return false;
 }
 
@@ -69,6 +79,9 @@ void ClientHandler::Help() const
 {
 	cout << endl;
 	cout << "To quit the game print 'exit'" << endl;
+	cout << "To print list of players print 'players'" << endl;
+	cout << "To print list of games print 'games'" << endl;
+	cout << "To quit the game print 'exit'" << endl;
 	cout << endl;
 }
 
@@ -79,7 +92,7 @@ void ClientHandler::Exit()
 
 void ClientHandler::PrintPlayers()
 {
-	std::list<Player> players_list = gameplay.board.provider.GetPlayersFromServer();
+	std::list<Player> players_list = client_gameplay.board.provider.GetPlayersFromServer();
 
     cout << "Choose Player:" << endl;
     cout << "Player name: " << endl;
@@ -89,7 +102,22 @@ void ClientHandler::PrintPlayers()
         cout << player.GetName() << endl;
     }
 
-    cout << "or print 'new' to create new Player: ";
+    cout << "or print 'newplayer' to create new Player: ";
+}
+
+void ClientHandler::PrintGames()
+{
+	std::list<Game> games_list = client_gameplay.board.provider.GetGamesFromServer();
+
+    cout << "Choose Game:" << endl;
+    cout << "Game name: " << endl;
+
+    for(const auto& game : games_list)
+    {
+        cout << game.GetName() << endl;
+    }
+
+    cout << "or print 'newgame' to create new Game: ";
 }
 
 bool ClientHandler::ChoosePlayer()
@@ -125,7 +153,64 @@ bool ClientHandler::CreateNewPlayer()
 	string name;
 	cin >> name;
 
-	gameplay.board.provider.PutPlayerToServer(name, "none", false);
+	client_player.SetName(name);
+
+	while (true)
+	{
+		cout << "What color would you like to play? " << endl;
+		cout << "Print 1 for White" << endl;
+		cout << "Print 2 for Black" << endl;
+		string color;
+		cin >> color;
+
+		if (color == "1")
+		{
+			client_player.SetColor("w");
+			client_player.SetStatus(true);
+			client_gameplay.board.provider.PutPlayerToServer(client_player);
+			break;
+		} 
+		else if (color == "2")
+		{
+			client_player.SetColor("b");
+			client_player.SetStatus(false);
+			client_gameplay.board.provider.PutPlayerToServer(client_player);
+			break;
+		}
+	}
 
     return true;
+}
+
+bool ClientHandler::ChooseGame()
+{
+    cout << "Choose Game or create new:" << endl;
+	cout << "Print 'help' for more information" << endl;
+	cout << endl;
+
+    PrintGames();
+
+    while (true) {
+        if (GetInputFromUser()) break;
+    }
+
+	return true;
+}
+
+bool ClientHandler::CreateNewGame()
+{
+	// cout << "Give me Game name: ";
+	// string name;
+	// cin >> name;
+
+	// std::list<Game> games = client_gameplay.board.provider.GetGamesFromServer();
+
+    return true;
+}
+
+bool ClientHandler::StartGame()
+{
+	client_gameplay.StartGame(client_player, client_playmate);
+
+	return true;
 }

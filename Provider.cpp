@@ -4,52 +4,9 @@ using std::endl;
 
 #include "Provider.h"
 
-namespace url_options {
-    string server_url = "http://172.17.0.1/chess";
-}
+using namespace restincurl;
 
-namespace tmp_data {
-	BoardAttributes tmp_boardAttr;
-    std::list<Player> tmp_players_list;
-}
-
-void GetBoardsData(Context& ctx) {
-     try {
-        std::list<Position> positions;
-        SerializeFromJson(positions, ctx.Get(url_options::server_url));
-
-        for(const auto& pos : positions)
-        {
-            // TODO refactor!!!!
-            if (pos.game_id == 1)
-            {
-                tmp_data::tmp_boardAttr.boardState.at(pos.position) = ChessMan(pos.symbol, pos.position, pos.first_move);
-            }
-        }
-
-    } catch (const exception& ex) {
-        clog << "Caught exception: " << ex.what() << endl;
-    }
-}
-
-void GetPlayersData(Context& ctx) {
-     try {
-        tmp_data::tmp_players_list.clear();
-        std::list<Player_struct> players;
-        SerializeFromJson(players, ctx.Get(url_options::server_url+"/players"));
-
-        for(const auto& player : players)
-        {
-            Player pl(player.name, player.color, player.status);
-            tmp_data::tmp_players_list.push_back(pl);
-        }
-
-    } catch (const exception& ex) {
-        clog << "Caught exception: " << ex.what() << endl;
-    }
-}
-
-Provider::Provider()
+Provider::Provider(string port): server_url(port)
 {
 }
 
@@ -59,80 +16,278 @@ Provider::~Provider()
 
 std::map <string, ChessMan> Provider::GetBoardsFromServer()
 {
-	auto rest_client_get = RestClient::Create();
-    rest_client_get->Process(GetBoardsData);
-    rest_client_get->CloseWhenReady(true);
-    return tmp_data::tmp_boardAttr.boardState;
+    Client client;
+    client.Build()->Get(server_url)
+        .AcceptJson()
+        .WithCompletion([&](const Result& result) {
+            if (result.curl_code == 0 && result.http_response_code == 200) {
+                try {
+                    const auto j = json::parse(result.body);
+                    for(const auto& r : j) {
+                        // TODO refactor!!!!
+                        if (r["game_id"].get<int>() == 1)
+                        {
+                            tmp_boardAttr.boardState.at(r["position"].get<string>()) = ChessMan(
+                                r["symbol"].get<string>(),
+                                r["position"].get<string>(),
+                                r["first_move"].get<bool>()
+                                );
+                        }
+                    }
+                    
+                } catch (const std::exception& ex) {
+                    std::cout << "Caught exception: " << ex.what() << std::endl;
+                    return;
+                }
+                
+            } else {
+                std::cout << "Request failed: " << result.msg << std::endl
+                    << "HTTP code: " << result.http_response_code << std::endl;
+            }
+        })
+        .Execute();
+        
+    client.CloseWhenFinished();
+    client.WaitForFinish();
+
+    return tmp_boardAttr.boardState;
 }
 
 std::list<Player> Provider::GetPlayersFromServer()
 {
-	auto rest_client_get = RestClient::Create();
-    rest_client_get->Process(GetPlayersData);
-    rest_client_get->CloseWhenReady(true);
-    return tmp_data::tmp_players_list;
+    Client client;
+    client.Build()->Get(server_url+"/players")
+        .AcceptJson()
+        .WithCompletion([&](const Result& result) {
+            if (result.curl_code == 0 && result.http_response_code == 200) {
+                try {
+                    tmp_players_list.clear();
+                    const auto players = json::parse(result.body);
+
+                    for(const auto& player : players)
+                    {
+                        Player pl(player["name"].get<string>(), player["color"].get<char>(), player["active"].get<bool>());
+                        tmp_players_list.push_back(pl);
+                    }
+                    
+                } catch (const std::exception& ex) {
+                    std::cout << "Caught exception: " << ex.what() << std::endl;
+                    return;
+                }
+                
+            } else {
+                std::cout << "Request failed: " << result.msg << std::endl
+                    << "HTTP code: " << result.http_response_code << std::endl;
+            }
+        })
+        .Execute();
+        
+    client.CloseWhenFinished();
+    client.WaitForFinish();
+
+    return tmp_players_list;
+}
+
+Player Provider::GetPlayerFromServer(string const player_name)
+{
+    Player pl;
+
+    Client client;
+    client.Build()->Get(server_url+"/players")
+        .AcceptJson()
+        .WithCompletion([&](const Result& result) {
+            if (result.curl_code == 0 && result.http_response_code == 200) {
+                try {
+                    tmp_players_list.clear();
+                    const auto players = json::parse(result.body);
+
+                    for(const auto& player : players)
+                    {
+                        if(player["name"] == player_name)
+                        {
+                            pl.SetName(player["name"].get<string>());
+                            pl.SetColor(player["color"].get<string>());
+                            pl.SetStatus(player["active"].get<bool>());
+                        }
+                    }
+                    
+                } catch (const std::exception& ex) {
+                    std::cout << "Caught exception: " << ex.what() << std::endl;
+                    return;
+                }
+                
+            } else {
+                std::cout << "Request failed: " << result.msg << std::endl
+                    << "HTTP code: " << result.http_response_code << std::endl;
+            }
+        })
+        .Execute();
+        
+    client.CloseWhenFinished();
+    client.WaitForFinish();
+
+    return pl;
+}
+
+std::list<Game> Provider::GetGamesFromServer()
+{
+    Client client;
+    client.Build()->Get(server_url+"/games")
+        .AcceptJson()
+        .WithCompletion([&](const Result& result) {
+            if (result.curl_code == 0 && result.http_response_code == 200) {
+                try {
+                    tmp_games_list.clear();
+                    const auto games = json::parse(result.body);
+
+                    for(const auto& game : games)
+                    {
+                        std::list<Player> players;
+                        for(const auto& player : game["players"])
+                        {
+                            Player pl(player["name"].get<string>(), player["color"].get<string>(), player["active"].get<bool>());
+                            players.push_back(pl);
+                        }
+                        Game gm(
+                            game["id"].get<int>(),
+                            game["name"].get<string>(),
+                            game["players_counter"].get<int>(),
+                            players);
+                        tmp_games_list.push_back(gm);
+                    }
+                    
+                } catch (const std::exception& ex) {
+                    std::cout << "Caught exception: " << ex.what() << std::endl;
+                    return;
+                }
+                
+            } else {
+                std::cout << "Request failed: " << result.msg << std::endl
+                    << "HTTP code: " << result.http_response_code << std::endl;
+            }
+        })
+        .Execute();
+        
+    client.CloseWhenFinished();
+    client.WaitForFinish();
+
+    return tmp_games_list;
+}
+
+Game Provider::GetGameFromServer(string const game_name)
+{
+    Game gm;
+
+    Client client;
+    client.Build()->Get(server_url+"/games")
+        .AcceptJson()
+        .WithCompletion([&](const Result& result) {
+            if (result.curl_code == 0 && result.http_response_code == 200) {
+                try {
+                    tmp_games_list.clear();
+                    const auto games = json::parse(result.body);
+
+                    for(const auto& game : games)
+                    {
+                        if(game["name"] == game_name)
+                        {
+                            std::list<Player> players;
+                            for(const auto& player : game["players"])
+                            {
+                                Player pl(player["name"].get<string>(), player["color"].get<string>(), player["active"].get<bool>());
+                                players.push_back(pl);
+                            }
+                            gm.SetId(game["id"].get<int>());
+                            gm.SetName(game["name"].get<string>());
+                            gm.SetPlayersCounter(game["players_counter"].get<int>());
+                            gm.SetPlayers(players);
+                        }
+                    }                    
+                } catch (const std::exception& ex) {
+                    std::cout << "Caught exception: " << ex.what() << std::endl;
+                    return;
+                }
+                
+            } else {
+                std::cout << "Request failed: " << result.msg << std::endl
+                    << "HTTP code: " << result.http_response_code << std::endl;
+            }
+        })
+        .Execute();
+        
+    client.CloseWhenFinished();
+    client.WaitForFinish();
+
+    return gm;
 }
 
 void Provider::PutPositionToServer(int _id, string _position, string _symbol)
 {
-	Position data_object;
-    data_object.game_id = _id;
-    data_object.position = _position;
-    data_object.symbol = _symbol;
+    json j;
+    j["game_id"] = _id;
+    j["position"] = _position;
+    j["symbol"] = _symbol;
 
-    auto rest_client_put = RestClient::Create();
+    Client client;
+    client.Build()->Put(server_url)
+        .AcceptJson()
+        .WithJson(j.dump())
+        .WithCompletion([&](const Result& result) {
+        })
+        .Execute();
 
-    rest_client_put->ProcessWithPromise([&](Context& ctx) {
-        auto reply = RequestBuilder(ctx)
-                .Put(url_options::server_url)
-                .Data(data_object)
-                .Execute();
-    });
-
-    rest_client_put->CloseWhenReady(true);
+    client.CloseWhenFinished();
+    client.WaitForFinish();
 }
 
-void Provider::PutPlayerToServer(string _name, string _color, bool _status)
+void Provider::PutPlayerToServer(Player player)
 {
-	Player_struct data_object;
-    data_object.name = _name;
-    data_object.color = _color;
-    // data_object.status = _status;
+    string color;
+    color += player.GetColor();
 
-    auto rest_client_put = RestClient::Create();
+    json j;
+    j["name"] = player.GetName();
+    j["color"] = color;
+    j["active"] = player.GetStatus();
 
-    rest_client_put->ProcessWithPromise([&](Context& ctx) {
-        auto reply = RequestBuilder(ctx)
-                .Put(url_options::server_url+"/players")
-                .Data(data_object)
-                .Execute();
-    });
+    Client client;
+    client.Build()->Put(server_url+"/players")
+        .AcceptJson()
+        .WithJson(j.dump())
+        .WithCompletion([&](const Result& result) {
+        })
+        .Execute();
 
-    rest_client_put->CloseWhenReady(true);
+    client.CloseWhenFinished();
+    client.WaitForFinish();
 }
 
-/////
-void Provider::PutTestToServer(int _test)
+void Provider::PutGameToServer(string _name, Player player)
 {
-    Test_struct data_object;
-    data_object.test = _test;
+    string color;
+    color += player.GetColor();
 
-    auto rest_client_put = RestClient::Create();
+    json j;
+    j["name"] = _name;
 
-    rest_client_put->ProcessWithPromise([&](Context& ctx) {
-        try {
-            auto reply = RequestBuilder(ctx)
-                .Put(url_options::server_url+"/test")
-                .Data(data_object)
-                .Execute();
-        }
-        catch (std::exception ex)
-		{
-			std::cerr << "Error calling: " << ex.what() << std::endl;
-		}	
-    });
+    json json_array = json::array();
 
-    rest_client_put->CloseWhenReady(true);
+    json p;
+    p["name"] = player.GetName();
+    p["color"] = color;
+    p["active"] = player.GetStatus();
+    json_array.push_back(p);
 
+    j["players"] = json_array;
+
+    Client client;
+    client.Build()->Put(server_url+"/games")
+        .AcceptJson()
+        .WithJson(j.dump())
+        .WithCompletion([&](const Result& result) {
+        })
+        .Execute();
+
+    client.CloseWhenFinished();
+    client.WaitForFinish();
 }
-/////

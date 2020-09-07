@@ -2,9 +2,12 @@
 #include "Service.h"
 using namespace std;
 
-int main()
+int main(int argc, char* argv[])
 {
-    Service serv("172.17.0.2","80");
+    string port(argv[1]);
+    std::cout << "port: " << port << std::endl;
+
+    Service serv(port,"80");
     serv.setEndpoint("/chess");
     serv.accept().wait();
     std::cout << "Server running..." << std::endl;

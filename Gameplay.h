@@ -14,7 +14,7 @@ static const std::map<char, string> players
 	{ 'b', "Black" }
 };
 
-static const bool invertTable(false);
+static const bool invertTable(true);
 
 class Gameplay
 {
@@ -31,7 +31,7 @@ public:
 	void Help() const;
 	void PleaseDrawBoard(char const playerColor) const;
 	bool Castling(char const playerColor, string test_input = "default");
-	bool SwitchPlayerAndLookForCheckMateOrCheck(char& playerColor);
-	void StartGame();
+	bool SwitchPlayerAndLookForCheckMateOrCheck(char playerColor, Player& player, Player& playmate);
+	void StartGame(Player& player, Player& playmate);
 	void UpdateDataFromServer();
 };
