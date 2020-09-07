@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  rest-api-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - .:/cpp-rest-api
+    working_dir: /cpp-rest-api
+    command: bash -c "make -f server.mak"
+    command: bash -c "./server `cat /etc/hosts | grep 172 | cut -c 1-10`"

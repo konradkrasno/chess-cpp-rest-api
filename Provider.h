@@ -16,7 +16,7 @@ using namespace nlohmann;
 class Provider
 {
 private:
-    string server_url = "http://172.17.0.1/chess";
+    string server_url;
 	BoardAttributes tmp_boardAttr;
     std::list<Player> tmp_players_list;
     std::list<Game> tmp_games_list;
@@ -29,6 +29,7 @@ public:
     Player GetPlayerFromServer(string const player_name);
     std::list<Game> GetGamesFromServer();
     Game GetGameFromServer(string const game_name);
+    void SetServerUrl(string port) { server_url = port; }
     void PutPositionToServer(int _id, string _position, string _symbol);
     void PutPlayerToServer(Player player);
     void PutGameToServer(string _name, Player player);

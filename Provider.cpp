@@ -6,7 +6,7 @@ using std::endl;
 
 using namespace restincurl;
 
-Provider::Provider()
+Provider::Provider(string port): server_url(port)
 {
 }
 

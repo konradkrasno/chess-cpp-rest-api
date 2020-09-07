@@ -1,7 +1,11 @@
 #include "ClientHandler.h"
 
-int main() {
+int main(int argc, char* argv[])
+{
     ClientHandler client_handler;
+
+    string port(argv[1]);
+    client_handler.client_gameplay.board.provider.SetServerUrl(port+"/chess");
 
     Player pl;
     pl = client_handler.client_gameplay.board.provider.GetPlayerFromServer("test_1");
