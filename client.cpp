@@ -5,7 +5,8 @@ int main(int argc, char* argv[])
     ClientHandler client_handler;
 
     string port(argv[1]);
-    client_handler.client_gameplay.board.provider.SetServerUrl(port+"/chess");
+    std::cout << "port: " << port << ".0.2" << std::endl;
+    client_handler.client_gameplay.board.provider.SetServerUrl("http://"+port+".0.2/chess");
 
     Player pl;
     pl = client_handler.client_gameplay.board.provider.GetPlayerFromServer("test_1");

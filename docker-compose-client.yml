@@ -10,4 +10,4 @@ services:
     volumes:
       - .:/cpp-rest-api
     working_dir: /cpp-rest-api
-    command: bash -c "make -f client.mak && ./client `cat /etc/hosts | grep 172 | cut -c 1-10`"
+    command: bash -c "make -f client.mak && ./client `cat /etc/hosts | grep 172 | cut -c 1-6`"
