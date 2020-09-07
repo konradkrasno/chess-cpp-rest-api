@@ -203,29 +203,14 @@ bool ClientHandler::CreateNewGame()
 	// string name;
 	// cin >> name;
 
-	// TODO handle with game id and increasing players counter
-	std::list<Game> games = client_gameplay.board.provider.GetGamesFromServer();
+	// std::list<Game> games = client_gameplay.board.provider.GetGamesFromServer();
 
-	// for(auto& game : games)
-	// {
-	// 	if(game.GetId() == 1)
-	// 	{
-	// 		client_game.AddPlayer(client_player);
-	// 	}
-	// 	else
-	// 	{
-	// 		int id = 1;
-	// 		string name("game");
-	// 		client_game.SetId(id);
-	// 		client_game.SetName(name);
-	// 		client_game.AddPlayer(client_player);
-	// 		client_gameplay.board.provider.PutGameToServer(id, name, client_game.GetPlayersCounter(), client_game.GetPlayers());		
-	// 	}
-	// }
     return true;
 }
 
 bool ClientHandler::StartGame()
 {
 	client_gameplay.StartGame(client_player, client_playmate);
+
+	return true;
 }

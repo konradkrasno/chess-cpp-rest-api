@@ -1,8 +1,5 @@
 CFLAGS=-Wall
-LD_FLAGS=-L/chess-client/restc-cpp/lib -lrestc-cpp -lz -lssl -lcrypto -lpthread -lboost_system \
-	-lboost_program_options -lboost_filesystem -lboost_date_time -lboost_context \
-	-lboost_coroutine -lboost_chrono -lboost_log -lboost_thread -lboost_log_setup \
-	-lboost_regex -lboost_atomic -lpthread -lcurl -lcpprest -lpthread -lboost_system -lssl -lcrypto
+LD_FLAGS=-lcurl -lpthread
 
 objects=client.o Gameplay.o subsidiary.o ChessMan.o Move.o \
  BoardAttributes.o PawnMoves.o UpdateAttributes.o KnightMoves.o \

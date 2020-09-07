@@ -189,7 +189,7 @@ void Gameplay::StartGame(Player& player, Player& playmate)
 
 	char player_color(player.GetColor());
 
-	board.DrawBoard(player_color, invertTable);
+	if(!player.GetStatus()) board.DrawBoard(player_color, invertTable);
 
 	while(true)
 	{

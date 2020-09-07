@@ -4,26 +4,24 @@ int main() {
     ClientHandler client_handler;
 
     Player pl;
-
-	cout << "Give me Player name: ";
-	string player;
-	cin >> player;
+    pl = client_handler.client_gameplay.board.provider.GetPlayerFromServer("test_1");
 
     string player_name;
-    if (player == "1")
-    {
-        player_name = "test_1";
-        pl.SetName("test_1");
-        pl.SetColor("w");
-        pl.SetStatus(true);
-    }
-    else
+    if (pl.GetName() == "test_1")
     {
         player_name = "test_2";
         pl.SetName("test_2");
         pl.SetColor("b");
         pl.SetStatus(false);
     }
+    else
+    {
+        player_name = "test_1";
+        pl.SetName("test_1");
+        pl.SetColor("w");
+        pl.SetStatus(true);
+    }
+
     client_handler.client_player = pl;
     string color;
     color += pl.GetColor();
