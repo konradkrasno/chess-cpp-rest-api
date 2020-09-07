@@ -2,7 +2,7 @@
 
 This is console application written in C++ which you can play chess online in localhost. This uses REST API.
 
-# Installation
+## Installation
 
 You can use docker to start up the game.
 
