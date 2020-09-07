@@ -13,9 +13,9 @@ git clone https://github.com/konradkrasno/chess-cpp-rest-api.git
 
 Initialize server:
 ```bash
-docker-compose -f docker-compose-server.yml
+docker-compose -f docker-compose-server.yml up
 ```
 Initialize client:
 ```bash
-docker-compose -f docker-compose-client.yml
+docker-compose -f docker-compose-client.yml up
 ```
