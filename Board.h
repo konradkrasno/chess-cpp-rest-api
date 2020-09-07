@@ -51,7 +51,7 @@ private:
 public:
     Board();
     ~Board();
-    Provider provider("http://172.17.0.1/chess");
+    Provider provider;
     void DrawBoard(char const playerColor, bool const invertTable) const;
     ChessMan FindChessManOnBoard(char const file, char const rank) const;
     void CalculateMovesBoardAndReactionBoard();
