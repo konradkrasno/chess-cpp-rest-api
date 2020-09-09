@@ -19,7 +19,8 @@ docker build --tag chess-cpp-rest-api:1.0 .
 
 Create docker container and initialize server:
 ```bash
-docker container run --name chess-server -v ${pwd}:/cpp-rest-api -p 80:80 -it chess-cpp-rest-api:1.0 bash -c "make -f server.mak && ./server `cat /etc/hosts | grep 172 | cut -c 1-10`"
+docker container run --name chess-server -v ${pwd}:/cpp-rest-api -p 80:80 -it chess-cpp-rest-api:1.0 bash 
+make -f server.mak && ./server `cat /etc/hosts | grep 172 | cut -c 1-10`
 ```
 
 To initialize client open new command line and enter to chess-cpp-api folder. Then you can run the container:
