@@ -27,8 +27,8 @@ To initialize client open new command line and enter to chess-cpp-api folder. Th
 ```bash
 docker container run --name chess-client -v ${pwd}:/cpp-rest-api -p 8080:80 -it chess-cpp-rest-api:1.0 bash
 ```
-Check server container port and run:
+Check server container IP address and run:
 ```bash
-make -f client.mak && ./client [server_port]
+make -f client.mak && ./client [server_IPAddress]
 ```
 To create another client create new container with another port.

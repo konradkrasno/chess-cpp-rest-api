@@ -4,10 +4,10 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-    string port(argv[1]);
-    std::cout << "port: " << port << std::endl;
+    string IPAddress(argv[1]);
+    std::cout << "IPAddress: " << IPAddress << std::endl;
 
-    Service serv(port,"80");
+    Service serv(IPAddress,"80");
     serv.setEndpoint("/chess");
     serv.accept().wait();
     std::cout << "Server running..." << std::endl;
