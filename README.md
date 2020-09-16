@@ -1,6 +1,6 @@
 # chess-cpp-rest-api
 
-This is a console application written in C++ with which you can play chess online in localhost. It uses REST API.\
+This is a console application written in C++ with which you can play chess online in localhost. It uses REST API.
 The main goal of creating this application is make way for play with chess game on two different computers.
 
 ## How it works?
