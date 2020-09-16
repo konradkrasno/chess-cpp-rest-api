@@ -1,8 +1,29 @@
 # chess-cpp-rest-api
 
-This is a console application written in C++ with which you can play chess online in localhost. It uses REST API.
+This is a console application written in C++ with which you can play chess online in localhost. It uses REST API.\
+The main goal of creating this application is make way for play with chess game on two different computers.
 
-## Installation
+## How it works?
+
+First step is setting up server. Server saves information about players and games status.
+Afterwards we have to set up server client. Using client we will could play with another client.
+
+The game is played by command prompt. When you start the game you will see chess board and you will be invite to make move.
+Moves are making by giving coordinate of field with chessman which we want to move and then giving the coordinates of field where we want to move this chessman.
+Game logic check possible moves and when king is in check or when is checkmate:
+
+## Design goals
+
+- [x] Create REST API server which can handle users and games
+- [x] Create client which can take and put data from server
+- [x] Handle creating users
+- [ ] Handle choosing existing users
+- [x] Handle creating new games and assign players
+- [ ] Handle choosing ols games
+- [ ] Handle choosing player color
+- [x] Handle starting game for two clients
+
+## Installation with using Docker
 
 You can use docker to start up the game.
 
