@@ -52,4 +52,4 @@ Check server container IP address and run:
 ```bash
 make -f client.mak && ./client [server_IPAddress]
 ```
-To create another client create new container with another port.
+To create another client run the new container with another port.
