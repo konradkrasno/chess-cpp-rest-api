@@ -6,7 +6,7 @@ The main goal of creating this application is make way for play with chess game 
 ## How it works?
 
 First step is setting up server. Server saves information about players and games status.
-Afterwards we have to set up server client. With using it we will could play with another clients.
+Afterwards we have to set up server client. With using client we will could play with another clients.
 
 The game is played by command prompt. When you start the game you will see chess board and you will be invite to make move.
 Moves are making by giving coordinate of field with chessman which we want to move and then giving the coordinates of field where we want to move this chessman.
